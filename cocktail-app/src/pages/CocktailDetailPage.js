@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Typography, Container, Grid, Paper, Chip, Box } from '@mui/material';
+import { Typography, Container, Grid, Paper, Chip, Box, CircularProgress } from '@mui/material';
 
 export const CocktailDetailPage = () => {
     const { id } = useParams();
     const [cocktail, setCocktail] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const API_URL = process.env.REACT_APP_COCKTAIL_API_BASE_URL;
@@ -15,13 +16,30 @@ export const CocktailDetailPage = () => {
             })
             .catch(error => {
                 console.error("There was an error fetching the cocktail details!", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, [id]);
 
-    if (!cocktail)
-        return (<Typography variant="h6" color="error">
-            Cocktail not found.
-        </Typography>);
+    if (loading) {
+        return (
+            <Container style={{ textAlign: 'center', marginTop: '20%' }}>
+                <CircularProgress />
+                <Typography variant="h6" style={{ marginTop: '20px' }}>
+                    Loading cocktail details...
+                </Typography>
+            </Container>
+        );
+    }
+
+    if (!cocktail) {
+        return (
+            <Typography variant="h6" color="error">
+                Cocktail not found.
+            </Typography>
+        );
+    }
 
     return (
         <Container>
@@ -59,7 +77,6 @@ export const CocktailDetailPage = () => {
                                     </li>
                                 ))}
                         </ul>
-
 
                         <Typography variant="h6" style={{ marginTop: '20px' }}>Instructions</Typography>
                         <Paper
