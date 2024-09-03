@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, CircularProgress, Box } from '@mui/material';
 import { CocktailCard } from '../components/CocktailCard';
 
 const API_BASE_URL = process.env.REACT_APP_COCKTAIL_API_BASE_URL;
 
 export const CocktailList = () => {
     const [cocktails, setCocktails] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/filter.php?c=Ordinary_Drink`)
@@ -15,8 +16,22 @@ export const CocktailList = () => {
             })
             .catch(error => {
                 console.error("There was an Error fetching the cocktails!", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
+
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress />
+                <Typography variant="h6" style={{ marginLeft: '20px' }}>
+                    Loading cocktails...
+                </Typography>
+            </Box>
+        );
+    }
 
     return (
         <div>
